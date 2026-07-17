@@ -8,6 +8,8 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
-EXPOSE 5000
+EXPOSE 6000
+
+ # host 7000 -> container 5000 -> app 6000
 
 CMD ["python" , "app.py"]
