@@ -20,6 +20,8 @@ COPY --from=build /app /app
 COPY --from=build /venv /venv
 ENV PATH="/venv/bin:$PATH"
 
+ENTRYPOINT=["/venv/bin/python"]
+
 
 EXPOSE 6000
 
