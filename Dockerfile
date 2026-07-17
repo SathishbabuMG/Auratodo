@@ -6,7 +6,7 @@ RUN python -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
 
-COPY requirements.* .
+COPY requirements.txt .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
@@ -19,11 +19,13 @@ WORKDIR /app
 COPY --from=build /app /app
 COPY --from=build /venv /venv
 ENV PATH="/venv/bin:$PATH"
-
-ENTRYPOINT=["/venv/bin/python"]
+ENV PYTHONPATH="/app"
 
 
 EXPOSE 6000
+ENTRYPOINT=["/venv/bin/python3"]
+
+
 
 CMD ["app.py"]
 
