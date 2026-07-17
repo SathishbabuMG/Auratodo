@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AuraFlow — Mindful Productivity Hub</title>
+    <meta name="description" content="A premium glassmorphic Pomodoro focus timer, ambient sound synthesizer, and Kanban task manager.">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Canvas for dynamic generative background particles -->
+    <canvas id="particles-canvas"></canvas>
+
+    <div class="app-container">
+        <!-- Top Navigation / Greeting Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <svg class="logo-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="9" stroke="url(#logo-grad)" stroke-width="2.5"/>
+                    <path d="M12 7V12L15 15" stroke="url(#logo-grad)" stroke-width="2.5" stroke-linecap="round"/>
+                    <defs>
+                        <linearGradient id="logo-grad" x1="3" y1="3" x2="21" y2="21" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="var(--accent-start)"/>
+                            <stop offset="1" stop-color="var(--accent-end)"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+                <div class="logo-text">
+                    <h1>AuraFlow</h1>
+                    <span class="logo-subtitle">mindful productivity</span>
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <div class="greeting-box">
+                    <span id="greeting-time">Hello</span>, <span id="greeting-user">Focus Partner</span>
+                </div>
+                <div class="date-badge" id="current-date">-- --, ----</div>
+                <div class="theme-toggle-container">
+                    <span class="status-indicator-dot animate-pulse"></span>
+                    <span class="session-counter-badge" id="session-count">0 Sessions</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Dashboard Layout -->
+        <main class="dashboard-grid">
+            
+            <!-- Left Side: Focus Room (Timer, Sound, Stats) -->
+            <section class="focus-room panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Focus Sanctuary</h2>
+                    <span class="panel-subtitle">Train your attention span</span>
+                </div>
+
+                <!-- Pomodoro Timer Block -->
+                <div class="timer-card">
+                    <div class="timer-display">
+                        <svg class="progress-ring" viewBox="0 0 220 220">
+                            <!-- Background path -->
+                            <circle class="progress-ring-bg" cx="110" cy="110" r="95"></circle>
+                            <!-- Animated foreground track -->
+                            <circle class="progress-ring-fill" id="timer-progress" cx="110" cy="110" r="95"></circle>
+                        </svg>
+                        <div class="timer-text-container">
+                            <span id="timer-numbers" class="timer-numbers">25:00</span>
+                            <span id="timer-label" class="timer-label">FOCUS STATE</span>
+                        </div>
+                    </div>
+
+                    <div class="timer-controls">
+                        <button id="btn-play-pause" class="btn btn-primary btn-icon-label" title="Start Session">
+                            <svg class="btn-icon" id="play-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
+                            </svg>
+                            <svg class="btn-icon hidden" id="pause-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="currentColor"/>
+                            </svg>
+                            <span id="btn-play-text">Start</span>
+                        </button>
+                        <button id="btn-reset" class="btn btn-secondary btn-icon-only" title="Reset Session">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 4V1L8 5L12 9V6C15.31 6 18 8.69 18 12C18 13.69 17.31 15.22 16.2 16.32L17.62 17.74C19.11 16.27 20 14.24 20 12C20 7.58 16.42 4 12 4ZM12 18C8.69 18 6 15.31 6 12C6 10.31 6.69 8.78 7.8 7.68L6.38 6.26C4.89 7.73 4 9.76 4 12C4 16.42 7.58 20 12 20V23L16 19L12 15V18Z" fill="currentColor"/>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <!-- Mode Selectors -->
+                    <div class="timer-modes">
+                        <button class="btn btn-mode active" data-mode="work" data-time="25">Focus (25m)</button>
+                        <button class="btn btn-mode" data-mode="short-break" data-time="5">Short Break (5m)</button>
+                        <button class="btn btn-mode" data-mode="long-break" data-time="15">Long Break (15m)</button>
+                    </div>
+                </div>
+
+                <!-- Ambient Audio Generator -->
+                <div class="ambient-card">
+                    <h3 class="card-title">Ambient Soundscapes</h3>
+                    <div class="sound-grid">
+                        <button class="sound-item" id="sound-brownian" data-sound="brownian">
+                            <div class="sound-icon-wrapper">
+                                <svg class="sound-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 2v20M17 5v14M22 9v6M7 7v10M2 10v4" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <span class="sound-name">Focus Noise</span>
+                        </button>
+
+                        <button class="sound-item" id="sound-rain" data-sound="rain">
+                            <div class="sound-icon-wrapper">
+                                <svg class="sound-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 16.58A5 5 0 0 0 18 7h-1.26A8 8 0 1 0 4 15.25" stroke-linecap="round"/>
+                                    <path d="M8 20l-2 2M12 18l-2 3M16 20l-2 2" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <span class="sound-name">Rain Shower</span>
+                        </button>
+
+                        <button class="sound-item" id="sound-ocean" data-sound="ocean">
+                            <div class="sound-icon-wrapper">
+                                <svg class="sound-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M2 12a10 10 0 0 0 20 0M2 15a10 10 0 0 0 20 0M2 9a10 10 0 0 0 20 0" stroke-linecap="round"/>
+                                </svg>
+                            </div>
+                            <span class="sound-name">Ocean Waves</span>
+                        </button>
+                    </div>
+                    
+                    <div class="volume-slider-container">
+                        <svg class="slider-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M11 5L6 9H2v6h4l5 4V5zM15.54 8.46a5 5 0 0 1 0 7.07" stroke-linecap="round"/>
+                        </svg>
+                        <input type="range" id="sound-volume" min="0" max="1" step="0.05" value="0.5" class="custom-slider">
+                    </div>
+                </div>
+
+                <!-- Stats Dashboard Section -->
+                <div class="stats-card">
+                    <h3 class="card-title">Day Focus Statistics</h3>
+                    <div class="stats-row">
+                        <div class="stat-box">
+                            <span class="stat-val" id="stat-completed-poms">0</span>
+                            <span class="stat-lbl">Intervals Done</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-val" id="stat-focus-time">0</span>
+                            <span class="stat-lbl">Mins Focused</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-val" id="stat-completed-tasks">0</span>
+                            <span class="stat-lbl">Tasks Done</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Right Side: Kanban Desk (Work Columns) -->
+            <section class="kanban-desk panel">
+                <div class="panel-header">
+                    <h2 class="panel-title">Task Workspace</h2>
+                    <span class="panel-subtitle">Organize and clear your pipeline</span>
+                </div>
+
+                <!-- The columns grid -->
+                <div class="kanban-grid">
+                    <!-- Column 1: TODO -->
+                    <div class="kanban-column" id="col-todo" data-status="todo">
+                        <div class="column-header">
+                            <div class="column-title-box">
+                                <span class="column-dot dot-todo"></span>
+                                <h3 class="column-name">To Do</h3>
+                            </div>
+                            <span class="column-counter" id="count-todo">0</span>
+                        </div>
+                        
+                        <!-- Add Task trigger button -->
+                        <button class="btn btn-add-task" id="btn-add-todo">
+                            <svg class="add-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            <span>Add a task</span>
+                        </button>
+
+                        <!-- Tasks container -->
+                        <div class="cards-container" id="tasks-todo"></div>
+                    </div>
+
+                    <!-- Column 2: IN PROGRESS -->
+                    <div class="kanban-column" id="col-in-progress" data-status="in-progress">
+                        <div class="column-header">
+                            <div class="column-title-box">
+                                <span class="column-dot dot-progress"></span>
+                                <h3 class="column-name">In Progress</h3>
+                            </div>
+                            <span class="column-counter" id="count-in-progress">0</span>
+                        </div>
+                        <div class="cards-container" id="tasks-in-progress"></div>
+                    </div>
+
+                    <!-- Column 3: DONE -->
+                    <div class="kanban-column" id="col-done" data-status="done">
+                        <div class="column-header">
+                            <div class="column-title-box">
+                                <span class="column-dot dot-done"></span>
+                                <h3 class="column-name">Completed</h3>
+                            </div>
+                            <span class="column-counter" id="count-done">0</span>
+                        </div>
+                        <div class="cards-container" id="tasks-done"></div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Edit Task Modal overlay -->
+    <div class="modal-backdrop hidden" id="task-modal">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h3 id="modal-title-text">Edit Task Details</h3>
+                <button class="btn-close-modal" id="modal-close">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                        <line x1="18" y1="6" x2="6" y2="18"/>
+                        <line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="task-input-title">Task Title</label>
+                    <input type="text" id="task-input-title" placeholder="What are you working on?">
+                </div>
+                <div class="form-group">
+                    <label for="task-input-desc">Description</label>
+                    <textarea id="task-input-desc" rows="3" placeholder="Add some notes or details..."></textarea>
+                </div>
+                <input type="hidden" id="task-input-id">
+                <input type="hidden" id="task-input-status">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-danger" id="btn-delete-task">Delete Task</button>
+                <div class="footer-actions">
+                    <button class="btn btn-secondary" id="btn-cancel-task">Cancel</button>
+                    <button class="btn btn-primary" id="btn-save-task">Save Changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import JavaScript Modules -->
+    <script type="module" src="main.js"></script>
+</body>
+</html>
