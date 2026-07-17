@@ -8,7 +8,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-FROM python:3.12-slim
+FROM gcr.io/distroless/python3-debian12
 
 WORKDIR /app
 
@@ -17,5 +17,5 @@ COPY --from=build /usr/local /usr/local
 
 EXPOSE 6000
 
-CMD ["python" , "app.py"]
+CMD ["app.py"]
 
