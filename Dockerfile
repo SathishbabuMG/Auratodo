@@ -1,14 +1,11 @@
-FROM python:3.12 AS build
+FROM python:3.12-slim AS build
 
 WORKDIR /app
-
-RUN python -m venv /venv
-ENV PATH="/venv/bin:$PATH"
 
 
 COPY requirements.txt .
 
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --target=/python -r requirements.txt
 
 COPY . .
 
@@ -17,13 +14,12 @@ FROM gcr.io/distroless/python3-debian12
 WORKDIR /app
 
 COPY --from=build /app /app
-COPY --from=build /venv /venv
-ENV PATH="/venv/bin:$PATH"
-ENV PYTHONPATH="/app"
+COPY --from=build /python /python
+
+ENV PYTHONPATH="/python"
 
 
 EXPOSE 6000
-ENTRYPOINT ["/venv/bin/python3"]
 
 
 
