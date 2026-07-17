@@ -77,4 +77,4 @@ def save_all_data():
 
 if __name__ == '__main__':
     # Run server on port 5000 in debug mode
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=6000, debug=True)
