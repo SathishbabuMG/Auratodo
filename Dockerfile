@@ -23,7 +23,7 @@ ENV PYTHONPATH="/app"
 
 
 EXPOSE 6000
-ENTRYPOINT=["/venv/bin/python3"]
+ENTRYPOINT ["/venv/bin/python3"]
 
 
 
