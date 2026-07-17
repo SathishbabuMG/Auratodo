@@ -1,4 +1,4 @@
-FROM python:3.12
+FROM python:3.12 as build
 
 WORKDIR /app
 
@@ -8,8 +8,14 @@ RUN pip install -r requirements.txt
 
 COPY . .
 
+FROM python:3.12-slim
+
+WORKDIR /app
+
+COPY --from=build /app /app
+COPY --from=build /usr/local /usr/local
+
 EXPOSE 6000
 
- # host 7000 -> container 5000 -> app 6000
-
 CMD ["python" , "app.py"]
+
